@@ -1,0 +1,32 @@
+# feedback_generation.yaml — 本圈独立反馈后的单窗口新生成，不继承旧纹理资格。
+# @author pony
+# @date 2026-11-09
+# @version v1.0.0
+# @last_modified 2026-11-09
+# @changelog
+#   - v1.0.0 (2026-11-09): 固定成功源、环境统计路由、四步生成及待验收边界。
+schema: thor-feedback-generation-v1
+selection:
+  route: cosmos_restyle
+  category: visual
+  subtype: background
+  source: verified_same_task_successful_demo
+  maximum_windows: 1
+target_condition:
+  background: matte_dark_wood
+  scope: visible_table_texture_only
+sampling:
+  model: edge/distilled
+  precision: bf16
+  attention: torch_sdpa
+  batch: 1
+  frames: 93
+  fps: 20
+  diffusion_steps: 4
+  resolution: '480'
+  seed: 42
+authority:
+  eligible_for_training: false
+  alter_current_iteration: false
+  production_promotion: false
+  real_robot_enabled: false

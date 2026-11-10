@@ -1,0 +1,12 @@
+diff --git a/cosmos_transfer2/_src/imaginaire/auxiliary/guardrail/qwen3guard/qwen3guard.py b/cosmos_transfer2/_src/imaginaire/auxiliary/guardrail/qwen3guard/qwen3guard.py
+--- a/cosmos_transfer2/_src/imaginaire/auxiliary/guardrail/qwen3guard/qwen3guard.py
++++ b/cosmos_transfer2/_src/imaginaire/auxiliary/guardrail/qwen3guard/qwen3guard.py
+@@ -79,7 +79,7 @@ class Qwen3Guard(ContentSafetyGuardrail):
+             return self.extract_label_and_categories(prompt)
+         except Exception as e:
+             log.error(f"Unexpected error occurred when running Qwen3Guard guardrail: {e}")
+-            return True, "Unexpected error occurred when running Qwen3Guard guardrail."
++            return False, "Unexpected error occurred when running Qwen3Guard guardrail."
+ 
+ 
+ def parse_args():

@@ -1,0 +1,17 @@
+version: thor-reason2-feedback-v1
+seed: 42
+quantization: null
+prompt_variant: media_first
+response_mode: structured_json
+max_new_tokens: 512
+max_model_len: 8192
+pixels_per_image: 262144
+temperature: 0
+frames: [initial, middle, terminal]
+views: [agentview, wrist]
+min_calibration_episodes: 20
+min_success_episodes: 5
+min_failure_episodes: 5
+min_accuracy: 0.90
+min_success_recall: 0.90
+min_failure_recall: 0.90

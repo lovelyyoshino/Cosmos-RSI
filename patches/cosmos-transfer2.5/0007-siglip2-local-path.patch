@@ -1,0 +1,21 @@
+diff --git a/cosmos_transfer2/_src/transfer2/networks/siglip2.py b/cosmos_transfer2/_src/transfer2/networks/siglip2.py
+--- a/cosmos_transfer2/_src/transfer2/networks/siglip2.py
++++ b/cosmos_transfer2/_src/transfer2/networks/siglip2.py
+@@ -13,6 +13,8 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
++import os
++
+ from typing import List, Optional
+ 
+ import torch
+@@ -51,6 +53,8 @@
+ 
+ 
+ def get_siglip2_model_processor(model_name: str):
++    # 项目只替换已校验的本地资源地址，默认模型与原始推理保持不变。
++    model_name = os.environ.get("RSI_SIGLIP2_PATH", model_name)
+     config = AutoConfig.from_pretrained(model_name)
+     config.vision_config.vision_use_head = False
+     model = Siglip2VisionModel(config.vision_config)

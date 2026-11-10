@@ -1,0 +1,14 @@
+# mining.yaml — 仿真环境真值驱动统计路由，Reason解释独立记录。
+# @author pony
+# @date 2026-11-09
+# @version v1.1.0
+# @last_modified 2026-11-09
+# @changelog
+#   - v1.1.0 (2026-11-09): 明确环境真值权限，不以未校准Reason否决正确成功源。
+version: thor-feedback-mining-v1
+decision_authority: environment_truth
+min_condition_episodes: 10
+hard_success_min_episodes: 10
+hard_success_percentile: 90
+visual_rule: perturbed_failure_wilson95_lower_above_standard_upper
+behavioral_rule: require_independently_validated_physical_evidence

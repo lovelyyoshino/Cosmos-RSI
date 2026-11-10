@@ -1,0 +1,26 @@
+--- a/cosmos_transfer2/inference.py
++++ b/cosmos_transfer2/inference.py
+@@ -43,6 +43,7 @@
+         args: SetupArguments,
+         batch_hint_keys: list[str],
+         experiment_opts: list[str] | None = None,
++        checkpoint_paths: list[str] | None = None,
+     ) -> None:
+         log.debug(f"{args.__class__.__name__}({args})({batch_hint_keys})")
+         self.setup_args = args
+@@ -71,6 +72,15 @@
+                 for key in CONTROL_KEYS
+             ]
+             self.experiment = "multibranch_720p_t24_spaced_layer4_cr1pt1_rectified_flow_inference"
++
++        if checkpoint_paths is not None:
++            # 显式覆盖本地四分支，顺序保持CONTROL_KEYS；不触发离线机器的隐式HF下载。
++            if self.is_distilled or len(self.batch_hint_keys) < 2 or len(checkpoint_paths) != len(CONTROL_KEYS):
++                raise ValueError("Local branch overrides require all four base multicontrol checkpoints")
++            paths = [Path(path).resolve(strict=True) for path in checkpoint_paths]
++            if any(not path.is_file() or path.suffix != ".pt" for path in paths):
++                raise ValueError("Every local control checkpoint must be an existing .pt file")
++            self.checkpoint_list = [str(path) for path in paths]
+ 
+         torch.enable_grad(False)  # Disable gradient calculations for inference
+ 

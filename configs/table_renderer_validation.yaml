@@ -1,0 +1,31 @@
+# table_renderer_validation.yaml — 固定设计与新训练示范的重渲染方法验证，不授予入训资格。
+# @author pony
+# @date 2026-11-08
+# @version v1.1.0
+# @last_modified 2026-11-08
+# @changelog
+#   - v1.1.0 (2026-11-08): 元数据确认demo_23不在成功缓存；读取图像前固定下一有效训练源demo_25。
+#   - v1.0.0 (2026-11-08): 在查看demo_23前固定纹理、桌体、材质、源及完整控制范围。
+version: thor-table-renderer-validation-v1.1
+purpose: method_validation_only
+design_episode_suffix: caddy-demo_16
+heldout_episode_suffix: caddy-demo_25
+design_reference_run: table_renderer_design_20261108T153429_483010+0800
+texture_design_run: table_texture_design_20261108T132043_578426+0800
+texture_sha256: 1da3f6cf62bf0447dceaf7ef694252d53b1bb452eb89840becff985dc209db97
+target_condition: {background: matte_dark_wood}
+frames: 93
+fps: 20
+width: 256
+height: 256
+table_body: study_table
+table_mesh: desk_vis
+table_visual_group: 1
+texture_resize: opencv_inter_linear
+analytic_albedo_rgb: [88, 50, 30]
+matte_reflectance: 0.0
+matte_shininess: 0.0
+matte_specular: 0.0
+composite_scope: exact_same_observation_visible_table
+protected_pixels: all_non_table_source_rgb
+eligible_for_training: false

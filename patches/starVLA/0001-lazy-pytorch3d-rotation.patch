@@ -1,0 +1,21 @@
+diff --git a/starVLA/dataloader/gr00t_lerobot/transform/state_action.py b/starVLA/dataloader/gr00t_lerobot/transform/state_action.py
+--- a/starVLA/dataloader/gr00t_lerobot/transform/state_action.py
++++ b/starVLA/dataloader/gr00t_lerobot/transform/state_action.py
+@@ -18,7 +18,6 @@
+ from typing import Any, ClassVar
+ 
+ import numpy as np
+-import pytorch3d.transforms as pt
+ import torch
+ from pydantic import Field, PrivateAttr, field_validator, model_validator
+ 
+@@ -34,6 +33,9 @@ class RotationTransform:
+ 
+         Always use matrix as intermediate representation.
+         """
++        # 原始动作读取和标量归一化不需要旋转库；实际转换时仍要求真实依赖。
++        import pytorch3d.transforms as pt
++
+         if from_rep.startswith("euler_angles"):
+             from_convention = from_rep.split("_")[-1]
+             from_rep = "euler_angles"

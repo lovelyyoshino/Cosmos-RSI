@@ -1,0 +1,25 @@
+# judge_reasoning_bf16.yaml — 保留物理推理过程的独立比较，不复用为冻结任务门禁。
+# @author pony
+# @date 2026-11-09
+# @version v1.0.0
+# @last_modified 2026-11-09
+# @changelog
+#   - v1.0.0 (2026-11-09): 与既有bf16结构化盲判使用相同输入，仅比较输出推理约定。
+version: thor-reason2-feedback-v1
+model_name: Cosmos-Reason2-2B
+seed: 42
+quantization: null
+prompt_variant: media_first
+response_mode: reasoning_json
+max_new_tokens: 1536
+max_model_len: 8192
+pixels_per_image: 262144
+temperature: 0
+frames: [initial, middle, terminal]
+views: [agentview, wrist]
+min_calibration_episodes: 20
+min_success_episodes: 5
+min_failure_episodes: 5
+min_accuracy: 0.90
+min_success_recall: 0.90
+min_failure_recall: 0.90

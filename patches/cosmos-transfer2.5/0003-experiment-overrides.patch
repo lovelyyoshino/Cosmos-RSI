@@ -1,0 +1,21 @@
+diff --git a/cosmos_transfer2/inference.py b/cosmos_transfer2/inference.py
+--- a/cosmos_transfer2/inference.py
++++ b/cosmos_transfer2/inference.py
+@@ -52,6 +52,7 @@ class Control2WorldInference:
+         self,
+         args: SetupArguments,
+         batch_hint_keys: list[str],
++        experiment_opts: list[str] | None = None,
+     ) -> None:
+         log.debug(f"{args.__class__.__name__}({args})({batch_hint_keys})")
+         self.setup_args = args
+@@ -137,6 +138,9 @@ class Control2WorldInference:
+             registered_exp_name = EXPERIMENTS[self.experiment].registered_exp_name
+             exp_override_opts = EXPERIMENTS[self.experiment].command_args.copy()
+ 
++        # 本地资源路径沿用底层pipeline已有的配置覆盖入口。
++        exp_override_opts.extend(experiment_opts or [])
++
+         # Initialize the inference pipeline - same class for both distilled and non-distilled
+         self.inference_pipeline = ControlVideo2WorldInference(
+             # pyrefly: ignore [bad-argument-type]

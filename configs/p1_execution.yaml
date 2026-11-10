@@ -1,0 +1,92 @@
+# p1_execution.yaml — 当前确切实验及模型串行队列，只读核验，不启动或重启任务。
+# @author pony
+# @date 2026-11-09
+# @version v1.4.0
+# @last_modified 2026-11-09
+# @changelog
+#   - v1.4.0 (2026-11-09): 开发实验及素材完整封存后，绑定保守正式复验与冻结素材等待任务。
+#   - v1.3.0 (2026-11-09): 开发种子预检后复用三份封存训练，绑定确切接续评测与素材任务。
+#   - v1.2.0 (2026-11-09): 绑定独立进程动作诊断与接续队列，保留旧失败目录作为历史证据。
+#   - v1.1.0 (2026-11-09): 追加确切保守开发试验后的CPU图表与固定回合视频导出。
+#   - v1.0.0 (2026-11-09): 将已运行整圈及五个接续任务绑定为可检查的执行清单。
+schema: thor-rsi-execution-v1
+iteration_run: runs/p0/rsi_iteration_20261109T172235_866018+0800
+environments: [policy, sim, transfer, predict]
+jobs:
+  - id: iteration
+    label: 正式三角色训练与完整冻结门禁
+    script: rsi/loop.py
+    pid: 696712
+    run: runs/p0/rsi_iteration_20261109T040429_184351+0800
+    stage: rsi_iteration
+    artifact: iteration.json
+  - id: reason
+    label: Reason固定推理比较与条件独立校准
+    script: scripts/p1_reason_followup.py
+    execution: runs/p0/p1_reason_followup_wait_exec_20261109T060706+0800
+    log: logs/reason_followup.log
+    stage: p1_reason_followup
+    artifact: reason_followup.json
+    upstream: iteration
+    upstream_flag: --iteration-run
+  - id: predict
+    label: Predict多状态真实未来诊断
+    script: scripts/p1_predict_validation.py
+    execution: runs/p0/p1_predict_validation_wait_exec_20261109T064555+0800
+    log: logs/predict_validation.log
+    stage: p1_predict_validation
+    artifact: predict_validation.json
+    upstream: reason
+    upstream_flag: --after-reason-exec
+  - id: generation
+    label: 独立反馈后的新Transfer窗口
+    script: scripts/p1_feedback_generation.py
+    execution: runs/p0/p1_feedback_generation_wait_exec_20261109T080410+0800
+    log: logs/feedback_generation.log
+    stage: p1_feedback_generation
+    artifact: generation_report.json
+    upstream: predict
+    upstream_flag: --after-predict-exec
+  - id: action_probe
+    label: 四策略零更新动作复现
+    script: scripts/p1_policy_regression_probe.py
+    execution: runs/p0/p1_policy_action_probe_isolated_exec_20261109T161808+0800
+    log: logs/action_probe.log
+    stage: p1_policy_action_probe
+    artifact: action_probe.json
+    upstream: generation
+    upstream_flag: --after-generation-exec
+  - id: conservative_pilot
+    label: 保守续训及独立开发回合
+    script: scripts/p1_conservative_pilot.py
+    execution: runs/p0/p1_conservative_pilot_seed_resume_exec_20261109T165720+0800
+    log: logs/pilot.log
+    stage: p1_conservative_pilot
+    artifact: pilot.json
+    upstream: action_probe
+    upstream_flag: --after-action-probe-exec
+  - id: pilot_materials
+    label: 保守开发试验后的真实配对图表与视频
+    script: scripts/p1_pilot_materials.py
+    execution: runs/p0/p1_pilot_materials_seed_resume_exec_20261109T165720+0800
+    log: logs/materials.log
+    stage: video_materials_conservative_pilot
+    artifact: materials_manifest.json
+    upstream: conservative_pilot
+    upstream_flag: --after-pilot-exec
+  - id: conservative_formal
+    label: 首圈保守配方独立正式复验
+    script: rsi/loop.py
+    pid: 815316
+    run: runs/p0/rsi_iteration_20261109T172235_866018+0800
+    stage: rsi_iteration
+    artifact: iteration.json
+  - id: conservative_formal_materials
+    label: 保守正式复验后的完整冻结图表与固定回合视频
+    script: scripts/p1_iteration_materials.py
+    execution: runs/p0/p1_conservative_formal_materials_exec_20261109T172403+0800
+    log: logs/materials.log
+    stage: p1_iteration_materials
+    artifact: materials_manifest.json
+    upstream: conservative_formal
+    upstream_flag: --iteration-run

@@ -1,0 +1,18 @@
+# geometry_context_diagnostic.yaml — 预声明背景隔离诊断，不改变现有入训质量门。
+# @author pony
+# @date 2026-11-08
+# @version v1.0.0
+# @last_modified 2026-11-08
+# @changelog
+#   - v1.0.0 (2026-11-08): 固定源ROI邻域、背景中性色与已知错误正控，不扫描参数。
+version: source-roi-context-neutral-v1
+diagnostic_only: true
+protected_radius_pixels: 8
+neutral_rgb: [128, 128, 128]
+object_shift_pixels: 12
+target_roi: black_book_1
+robot_roi: robot
+candidate_selection: source_only_balanced12
+required_frames: 93
+design_episode_suffix: caddy-demo_13
+heldout_episode_suffix: caddy-demo_16

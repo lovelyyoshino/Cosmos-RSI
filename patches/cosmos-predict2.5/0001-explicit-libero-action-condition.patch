@@ -1,0 +1,31 @@
+diff --git a/cosmos_predict2/_src/predict2/cosmos_policy/models/policy_video2world_model_rectified_flow.py b/cosmos_predict2/_src/predict2/cosmos_policy/models/policy_video2world_model_rectified_flow.py
+--- a/cosmos_predict2/_src/predict2/cosmos_policy/models/policy_video2world_model_rectified_flow.py
++++ b/cosmos_predict2/_src/predict2/cosmos_policy/models/policy_video2world_model_rectified_flow.py
+@@ -525,6 +525,27 @@ class CosmosPolicyVideo2WorldModelRectifiedFlow(CosmosPolicyDiffusionModelRectifiedF
+                 condition.gt_frames, proprio, proprio_indices=current_proprio_latent_idx
+             )
+ 
++        # RSI: LIBERO external actions are supplied explicitly, not via ignored sampler kwargs.
++        if "rsi_candidate_actions" in data_batch:
++            actions = data_batch["rsi_candidate_actions"]
++            indices = data_batch["action_latent_idx"]
++            if (
++                actions.shape != (B, 16, 7)
++                or indices.shape != (B,)
++                or not torch.isfinite(actions).all()
++                or not torch.all(indices == 4)
++                or condition.gt_frames.shape[2] != 9
++                or num_conditional_frames != 5
++            ):
++                raise ValueError("RSI action conditioning requires LIBERO Bx16x7 actions and five clean slots")
++            actions = actions.to(device=condition.gt_frames.device, dtype=condition.gt_frames.dtype)
++            indices = indices.to(device=condition.gt_frames.device, dtype=torch.int64)
++            batch_indices = torch.arange(B, device=condition.gt_frames.device)
++            condition.gt_frames = replace_latent_with_action_chunk(
++                condition.gt_frames, actions, action_indices=indices
++            )
++            condition.condition_video_input_mask_B_C_T_H_W[batch_indices, :, indices, :, :] = 1
++
+         if (
+             "mask_current_state_action_for_value_prediction" in data_batch
+             and data_batch["mask_current_state_action_for_value_prediction"]

@@ -1,0 +1,12 @@
+version: thor-feedback-rollout-v1
+max_steps: 520
+settle_steps: 10
+control_hz: 20
+action_horizon: 8
+action_samples: 3
+dispersion_every_chunks: 1
+dispersion_definition: rms_population_std_of_normalized_Hx7_actions
+vlm_feature_reuse: false
+hard_success_percentile: 90
+scene_duplicate_tolerance: 0.000001
+regrasp_count_status: null_until_contact_and_object_lift_validated

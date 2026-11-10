@@ -1,0 +1,13 @@
+# 按 CosmosGR00T 的直接 import 链安装；不引入 DeepSpeed 或 flash-attn。
+accelerate==1.5.2
+diffusers
+omegaconf==2.3.0
+rich
+einops
+peft
+timm
+qwen-vl-utils
+modelscope==1.40.2
+pyarrow==26.0.1
+imageio
+imageio-ffmpeg

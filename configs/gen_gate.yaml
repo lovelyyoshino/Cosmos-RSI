@@ -1,0 +1,19 @@
+# gen_gate.yaml — 生成几何门的预设阈值，不根据策略评测结果挑选样本。
+# @author pony
+# @date 2026-11-06
+# @version v1.0.0
+# @last_modified 2026-11-06
+# @changelog
+#   - v1.0.0 (2026-11-06): 逐帧源分割校准、生成ROI、边缘与闪烁检查；语义复核单独留证。
+version: thor-roi-sam2-v1
+source_segmentation_iou_min: 0.75
+robot_mask_iou_min: 0.80
+object_mask_iou_min: 0.75
+roi_edge_f1_mean_min: 0.60
+roi_edge_f1_p10_min: 0.45
+temporal_residual_p95_max: 0.08
+object_chromaticity_error_max: 0.15
+visible_pixels_min: 16
+edge_tolerance_pixels: 2
+required_frames: 93
+semantic_review_required: true

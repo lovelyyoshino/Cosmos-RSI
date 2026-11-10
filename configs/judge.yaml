@@ -1,0 +1,10 @@
+version: thor-reason2-feedback-v1
+seed: 42
+max_new_tokens: 256
+temperature: 0
+frames: [initial, middle, terminal]
+views: [agentview, wrist]
+min_calibration_episodes: 20
+min_success_episodes: 5
+min_failure_episodes: 5
+min_accuracy: 0.90

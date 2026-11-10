@@ -1,0 +1,59 @@
+# iteration_budget.yaml — 首圈预声明预算；阶段收益仍须真实运行，不从预算推定。
+# @author pony
+# @date 2026-11-09
+# @version v1.0.0
+# @last_modified 2026-11-09
+# @changelog
+#   - v1.0.0 (2026-11-09): 锁定独立采集、生成上限、成对训练和既有完整冻结门禁。
+schema: thor-rsi-iteration-budget-v1
+phase: P1
+primary_task: t00
+collection:
+  conditions: [t00-standard, t00-lighting, t00-background]
+  per_condition: 20
+  initial_seed: 63000
+  policy_seed: 73000
+  max_steps: 520
+  action_horizon: 8
+  workers: 1
+  authority: environment_truth
+  require_actual_state_and_seed_isolation: true
+generation:
+  maximum_windows: 8
+  frames_per_window: 93
+  batch: 1
+  diffusion_steps: 4
+  seed: 42
+  source: verified_success_only
+  # 当前仅桌体纹理派生已准入；光照须独立通过质量门，不能用背景结果替代。
+  background_method: cosmos_mirrored_uv_atlas_sim_rerender
+  lighting_admission: required_not_yet_qualified
+  allocate_from: current_iteration_independent_feedback
+training:
+  steps_per_role: 1000
+  batch: 8
+  seeds: [42]
+  roles: [candidate, control, analytic_ablation]
+  sample_slots_per_role: 8000
+  candidate_quotas: {demo: 4000, self_distill: 2000, generated: 2000}
+  control_quotas: {demo: 4000, duplicate_fill: 4000, self_distill: 0, generated: 0}
+  absent_qualified_pool: stop_and_report
+  same_parent_seed_optimizer_and_steps: true
+evaluation:
+  definition: eval/frozen_eval_set.json
+  sha256: 4b759883c1adbb34b8b974928a29493c471387651648065c0e269fdd5a04e1b8
+  workers: 4
+  policy_batch: 1
+  candidate: {standard: 200, target_perturbed: 800, nontarget_perturbed: 200}
+  # 复用现有完整评测入口；额外测对照的两个检查子集，不修改冻结集或门槛。
+  control: {standard: 200, target_perturbed: 800, nontarget_perturbed: 200}
+  incumbent: reuse_same_environment_and_frozen_version_only
+  analytic_ablation: diagnostic_budget_declared_separately
+promotion:
+  min_gain_vs_control: max_0.025_or_2se
+  require_gain_vs_incumbent: true
+  max_standard_nontarget_drop: max_0.03_or_2se
+  max_latency_p95_ratio: 1.2
+  human_approval_required: true
+  real_robot_enabled: false
+  consecutive_accepted_iterations_required: 2

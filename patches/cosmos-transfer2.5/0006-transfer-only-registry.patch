@@ -1,0 +1,27 @@
+diff --git a/cosmos_transfer2/_src/interactive/configs/registry_transfer2p5.py b/cosmos_transfer2/_src/interactive/configs/registry_transfer2p5.py
+--- a/cosmos_transfer2/_src/interactive/configs/registry_transfer2p5.py
++++ b/cosmos_transfer2/_src/interactive/configs/registry_transfer2p5.py
+@@ -21,5 +21,8 @@ training data sources and loaders (that has additional control inputs).
+ """
+ 
++import importlib
++import os
++import sys
+ from typing import Any, List
+ 
+ import attrs
+@@ -116,5 +119,13 @@ def make_config():
+     register_dataloaders_transfer()
+ 
+     # experiment config are defined in the experiment folder
+-    import_all_modules_from_package("cosmos_transfer2._src.interactive.configs.registry_experiment", reload=True)
++    if os.environ.get("RSI_TRANSFER_ONLY") == "1":
++        # 离线Transfer推理只注册本模型，避免无关action-conditioned配置下载teacher。
++        module = "cosmos_transfer2._src.interactive.configs.registry_experiment.experiments_dmd2_transfer2p5"
++        if module in sys.modules:
++            importlib.reload(sys.modules[module])
++        else:
++            importlib.import_module(module)
++    else:
++        import_all_modules_from_package("cosmos_transfer2._src.interactive.configs.registry_experiment", reload=True)
+     return c

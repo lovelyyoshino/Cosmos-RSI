@@ -1,0 +1,31 @@
+# table_texture_design.yaml — 固定纹理归一化的设计诊断，不授予训练资格。
+# @author pony
+# @date 2026-11-08
+# @version v1.0.0
+# @last_modified 2026-11-08
+# @changelog
+#   - v1.0.0 (2026-11-08): 预声明固定首帧桌面纹理、亮度归一化与画面边缘处理。
+version: thor-table-texture-atlas-design-v1
+purpose: design_only_not_training
+design_episode_suffix: caddy-demo_16
+future_method_check_episode_suffix: caddy-demo_23
+target_condition: {background: matte_dark_wood}
+frames: 93
+fps: 20
+width: 256
+height: 256
+native_texture_frame: 0
+texture_crop: largest_rectangle_in_all_frame_editable_intersection
+protected_radius_pixels: 8
+image_border: outside_image_is_not_an_obstacle
+feather_inside_editable_pixels: 8
+minimum_crop_width_height: 8
+minimum_editable_pixels_per_frame: 1024
+texture_highpass_sigma_pixels: 4.0
+texture_rms_floor: 1.0
+texture_contrast: 0.08
+texture_standardized_clip: 2.0
+matte_albedo_rgb: [88.0, 50.0, 30.0]
+source_shading_reference: median_first_frame_visible_table_luma
+source_shading_clip: [0.5, 1.5]
+eligible_for_training: false

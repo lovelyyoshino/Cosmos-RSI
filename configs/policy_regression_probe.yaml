@@ -1,0 +1,24 @@
+# policy_regression_probe.yaml — 固定独立示范验证样本的零更新退化诊断。
+# @author pony
+# @date 2026-11-09
+# @version v1.0.0
+# @last_modified 2026-11-09
+# @changelog
+#   - v1.0.0 (2026-11-09): 先复现各权重原动作，再按任务比较固定验证块；不改正式实验。
+schema: thor-policy-regression-probe-v1
+selection:
+  split: demo_validation
+  expected_tasks: 10
+  episodes_per_task: 2
+  positions: [initial, middle, last_valid]
+inference:
+  batch: 1
+  seeds: [44, 45]
+  action_horizon: 8
+  saved_probe_max_abs_error: 0.00001
+authority:
+  optimization_steps: 0
+  validation_used_for_training: false
+  formal_gate_executed: false
+  production_promotion: false
+  real_robot_enabled: false

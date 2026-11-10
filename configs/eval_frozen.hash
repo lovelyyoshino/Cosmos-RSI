@@ -1,0 +1,4 @@
+4b759883c1adbb34b8b974928a29493c471387651648065c0e269fdd5a04e1b8
+# Thor eval/frozen_eval_set.json；600个实际初态、1200个策略评测ID。
+# standard=200，target_perturbed=800，nontarget_perturbed=200；统计口径见docs/eval_protocol.md，测量条件以实际evaluation.json为准。
+# 冻结记录：runs/p0/freeze_eval_20261106T215915_628155+0800/probe.json

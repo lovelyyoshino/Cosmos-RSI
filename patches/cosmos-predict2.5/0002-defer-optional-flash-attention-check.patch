@@ -1,0 +1,29 @@
+diff --git a/cosmos_predict2/_src/reason1/networks/qwen2_5_vl.py b/cosmos_predict2/_src/reason1/networks/qwen2_5_vl.py
+--- a/cosmos_predict2/_src/reason1/networks/qwen2_5_vl.py
++++ b/cosmos_predict2/_src/reason1/networks/qwen2_5_vl.py
+@@ -65,7 +65,8 @@ else:
+     print("flash_attn_2 not available")
+     flash_attn_varlen_func = None
+ 
+-assert is_flash_attn_2_available(), "flash_attn_2 not available. run pip install flash_attn"
++# Cached embeddings do not instantiate Reason1. Check the optional dependency
++# when a FlashAttention implementation is actually constructed instead.
+ 
+ logger = logging.get_logger(__name__)
+ 
+@@ -261,6 +262,7 @@ def apply_rotary_pos_emb_flashatt(tensor: torch.Tensor, freqs: torch.Tensor) -> tor
+ 
+ class Qwen2_5_VLVisionFlashAttention2(nn.Module):
+     def __init__(self, dim: int, num_heads: int = 16) -> None:
++        assert is_flash_attn_2_available(), "Vision FlashAttention2 requires flash_attn"
+         super().__init__()
+         self.num_heads = num_heads
+         self.qkv = nn.Linear(dim, dim * 3, bias=True)
+@@ -836,6 +838,7 @@ class Qwen2_5_VLFlashAttention2(Qwen2_5_VLAttention):
+     """
+ 
+     def __init__(self, *args, **kwargs):
++        assert is_flash_attn_2_available(), "Language FlashAttention2 requires flash_attn"
+         super().__init__(*args, **kwargs)
+ 
+         # flash_attn<2.1 generates top-left aligned causal mask, while what is needed here is bottom-right alignement, that was made default for flash_attn>=2.1. This attribute is used to handle this difference. Reference: https://github.com/Dao-AILab/flash-attention/releases/tag/v2.1.0.

@@ -1,0 +1,245 @@
+# rsi_pipeline.yaml — 统一入口及真实证据索引；配置存在不等于实验完成。
+# @author pony
+# @date 2026-11-09
+# @version v1.10.0
+# @last_modified 2026-11-09
+# @changelog
+#   - v1.10.0 (2026-11-09): 增加保守开发试验的CPU配对图表与固定视频导出，保留开发边界。
+#   - v1.9.0 (2026-11-09): 登记当前确切串行队列与只读运行核验，进度不等同收益。
+#   - v1.8.0 (2026-11-09): 增加真实参数与零更新动作的CPU诊断素材；不改已有模型队列。
+#   - v1.7.0 (2026-11-09): 登记保守开发短训、真实父优化器审计；开发权重不取得正式门禁资格。
+#   - v1.6.0 (2026-11-09): 接入实际权重/原生读取审计及独立验证零更新动作诊断。
+#   - v1.5.0 (2026-11-09): 增加退化诊断入口；修复准入状态路径歧义与原始基线误选。
+#   - v1.4.0 (2026-11-09): 增加独立反馈后的新生成入口；精确等待Predict，质量资格单列。
+#   - v1.3.0 (2026-11-09): 登记已封存正式训练素材入口，生产晋升圈数由真实证明链核验。
+#   - v1.2.0 (2026-11-09): 增加Predict多状态固定诊断，保持未验证规划的权限边界。
+#   - v1.1.0 (2026-11-09): 接入整圈结束后的Reason固定开发比较与独立验证入口。
+schema: thor-rsi-pipeline-v1
+definition: feedback_driven_recursive_policy_improvement
+hardware:
+  host: thor
+  root: /home/thor/rsi
+  architecture: aarch64
+  execution: strictly_serial_model_stages
+  power_policy: preserve_existing_mode
+  memory_monitor: tegrastats_200ms
+  backup_gpu_allowed: false
+task:
+  demonstration: pick_up_book_and_place_in_back_compartment_of_caddy
+  benchmark: libero_10
+  environment_truth: mujoco_task_success
+  target_conditions: [lighting, background]
+models:
+  policy:
+    framework: starVLA_CosmosGR00T
+    backbone: Cosmos-Reason2-2B
+    env: envs/policy
+    attention: sdpa
+    output: eight_step_action_chunk
+  reason:
+    primary: Cosmos-Reason2-2B
+    comparison: Cosmos-Reason1-7B
+    env: envs/policy
+    config: configs/judge_calibration.yaml
+    comparison_config: configs/judge_reason1_calibration.yaml
+    reasoning_config: configs/judge_reasoning_bf16.yaml
+    followup_config: configs/reason_followup.yaml
+    cudagraph_required: true
+    authority: calibrated_diagnosis_only
+  predict:
+    model: Cosmos-Predict2.5-2B/robot/policy/libero
+    env: envs/predict
+    precision: bf16
+    attention: torch_sdpa
+    batch: 1
+    diffusion_steps: 4
+    seed: 42
+    action_shape: [16, 7]
+    proprio_shape: [9]
+    output: two_camera_future_images_at_t_plus_16
+    mode: offline_advisory_until_validated
+    predicted_frames_are_training_labels: false
+  transfer:
+    model: Cosmos-Transfer2.5-2B
+    env: envs/transfer
+    variant: edge/distilled
+    precision: bf16
+    batch: 1
+    diffusion_steps: 4
+    frames_per_window: 93
+    admitted_method: cosmos_mirrored_uv_atlas_sim_rerender
+    admitted_scope: visible_table_texture_only
+    require_full_window_geometry_semantics_target_temporal_checks: true
+workflow:
+  execution_status_entrypoint: scripts/p1_workflow_status.py
+  execution_status_config: configs/p1_execution.yaml
+  collection_config: configs/rollout_budget.yaml
+  iteration_budget_config: configs/iteration_budget.yaml
+  mining_config: configs/mining.yaml
+  frozen_eval: eval/frozen_eval_set.json
+  eval_protocol: docs/eval_protocol.md
+  data_contract: docs/contracts.md
+  feedback_entrypoint: scripts/p0_feedback_chain.py
+  closeout_entrypoint: scripts/p0_closeout.py
+  integrated_qualification_entrypoint: scripts/p0_continue_integrated.sh
+  predict_entrypoint: scripts/p0_run_predict_smoke.sh
+  predict_validation_entrypoint: scripts/p1_predict_validation.py
+  predict_validation_config: configs/predict_validation.yaml
+  predict_validation_execution: after_exact_reason_followup_and_shared_stage_lock
+  generation_entrypoint: scripts/p0_table_uv_validation.py
+  post_feedback_generation_entrypoint: scripts/p1_feedback_generation.py
+  post_feedback_generation_config: configs/feedback_generation.yaml
+  post_feedback_generation_execution: after_exact_predict_validation_and_shared_stage_lock
+  post_feedback_generation_admission_status: separate_pending_qualification
+  generation_admission: scripts/p0_uv_window_gate.py
+  native_data_handoff: scripts/p0_lerobot_handoff.py
+  matched_training_entrypoint: scripts/p0_augmented_budget.py
+  formal_training_entrypoint: scripts/p1_policy_update.py
+  evaluation_entrypoint: scripts/p0_evaluate_policy.py
+  deployment_smoke_entrypoint: scripts/p0_augmented_deploy_smoke.py
+  # P0计算预算与P1正式更新各有入口；正式训练仍须完整冻结门禁，不等同晋升。
+  training_entrypoint_scope: p0_budget_qualification_and_separate_formal_p1_update
+  recursive_orchestrator_entrypoint: rsi/loop.py
+  recursive_orchestrator_status: implemented_pending_complete_experiment
+  promotion_gate_entrypoint: scripts/p1_eval_gate.py
+  production_promotion_entrypoint: scripts/p1_promote.py
+  post_iteration_materials_entrypoint: scripts/p1_iteration_materials.py
+  training_materials_entrypoint: scripts/p1_training_materials.py
+  candidate_diagnostics_entrypoint: scripts/p1_update_diagnostics.py
+  candidate_diagnostics_scope: sealed_evaluations_and_sampling_audit_cpu_only
+  policy_regression_probe_entrypoint: scripts/p1_policy_regression_probe.py
+  policy_regression_probe_config: configs/policy_regression_probe.yaml
+  policy_regression_probe_execution: cpu_audit_then_actions_after_exact_feedback_generation_and_stage_lock
+  policy_regression_probe_scope: zero_updates_validation_actions_not_task_success
+  regression_materials_entrypoint: scripts/p1_regression_materials.py
+  regression_materials_scope: sealed_weight_and_action_diagnostics_cpu_only_not_task_success
+  conservative_pilot_entrypoint: scripts/p1_conservative_pilot.py
+  conservative_pilot_config: configs/iteration_budget_conservative_pilot.yaml
+  conservative_pilot_execution: after_exact_action_probe_and_shared_stage_lock
+  conservative_pilot_scope: development_only_no_formal_gate_or_promotion
+  conservative_pilot_materials_entrypoint: scripts/p1_pilot_materials.py
+  conservative_pilot_materials_execution: after_exact_conservative_pilot_cpu_only
+  conservative_pilot_materials_scope: paired_development_figures_and_fixed_videos_not_formal_gain
+  reason_followup_entrypoint: scripts/p1_reason_followup.py
+  reason_followup_config: configs/reason_followup.yaml
+  reason_followup_execution: after_exact_iteration_and_shared_stage_lock
+  resume_evidence: iteration_state.json
+  # 本版按独立反馈选择既有合格纹理池；没有重新生成或光照资格时如实标注。
+  formal_generation_scope: feedback_selection_of_prequalified_cosmos_texture_library
+  feedback_workers: 1
+promotion:
+  frozen_eval_counts: {standard: 200, target_perturbed: 800, nontarget_perturbed: 200}
+  min_gain_vs_control: max_0.025_or_2se
+  require_gain_vs_incumbent: true
+  max_standard_nontarget_drop: max_0.03_or_2se
+  max_latency_p95_ratio: 1.2
+  successful_consecutive_iterations: 2
+  human_approval_required: true
+  real_robot_enabled: false
+evidence:
+  p0_acceptance:
+    stage: p0_closeout
+    glob: p0_closeout_20*/p0_acceptance.json
+    require: {p0_component_acceptance_passed: true}
+  baseline:
+    stage: policy_evaluation
+    glob: policy_evaluation_20*/evaluation.json
+    # P0基线保持初始正式5000步；不能把刚结束的6000步候选误选为基线。
+    require: {full_eval_complete: true, training_step: 5000}
+  feedback_chain:
+    stage: feedback_chain
+    glob: feedback_chain_20*/feedback_chain.json
+    require: {completed_feedback_chain: true}
+  feedback:
+    stage: feedback_rollout
+    glob: feedback_rollout_20*/feedback_rollout.json
+  reason:
+    stage: feedback_judge
+    glob: feedback_judge_20*/judge_report.json
+    require: {model: /home/thor/rsi/checkpoints/base/Cosmos-Reason2-2B}
+  reason_comparison:
+    stage: feedback_judge
+    glob: feedback_judge_20*/judge_report.json
+    require: {model: /home/thor/rsi/checkpoints/base/Cosmos-Reason1-7B}
+  mining:
+    stage: feedback_mine
+    glob: feedback_mine_20*/mining_report.json
+  generated_data:
+    stage: lerobot_handoff
+    glob: lerobot_handoff_20*/handoff.json
+  new_feedback_generation:
+    stage: p1_feedback_generation
+    glob: p1_feedback_generation_20*/generation_report.json
+    require: {generation_performed: true, feedback_bound_before_generation: true, eligible_for_training: false}
+  candidate_budget:
+    stage: augmented_budget
+    glob: augmented_budget_20*/train_run.json
+    require: {role: candidate}
+  control_budget:
+    stage: augmented_budget
+    glob: augmented_budget_20*/train_run.json
+    require: {role: control}
+  analytic_budget:
+    stage: augmented_budget
+    glob: augmented_budget_20*/train_run.json
+    require: {role: analytic_ablation}
+  formal_candidate:
+    stage: p1_policy_train
+    glob: p1_policy_train_20*/train_run.json
+    require: {role: candidate, training_performed: true, eligible_for_evaluation: true}
+  formal_control:
+    stage: p1_policy_train
+    glob: p1_policy_train_20*/train_run.json
+    require: {role: control, training_performed: true, eligible_for_evaluation: true}
+  formal_analytic_ablation:
+    stage: p1_policy_train
+    glob: p1_policy_train_20*/train_run.json
+    require: {role: analytic_ablation, training_performed: true, eligible_for_evaluation: true}
+  formal_gate:
+    stage: p1_evaluation_gate
+    glob: p1_evaluation_gate_20*/iter.json
+    require: {schema: thor-rsi-evaluation-gate-v1}
+  candidate_diagnostics:
+    stage: p1_update_diagnostics
+    glob: p1_update_diagnostics_20*/diagnostics.json
+    require: {schema: thor-candidate-diagnostics-v1, causal_attribution_established: false, formal_promotion_gate_executed: false}
+  policy_weight_reader_audit:
+    stage: p1_policy_weight_reader_audit
+    glob: p1_policy_weight_reader_audit_20*/weight_reader_audit.json
+    require: {schema: thor-policy-regression-probe-v1, causal_attribution_established: false}
+  policy_action_probe:
+    stage: p1_policy_action_probe
+    glob: p1_policy_action_probe_20*/action_probe.json
+    require: {schema: thor-policy-regression-probe-v1, causal_attribution_established: false}
+  parent_optimizer_audit:
+    stage: p1_parent_optimizer_audit
+    glob: p1_parent_optimizer_audit_20*/optimizer_preflight.json
+    require: {schema: thor-parent-optimizer-audit-v1, optimization_steps_executed: 0, gpu_used: false}
+  conservative_pilot_input:
+    stage: p1_conservative_pilot_input
+    glob: p1_conservative_pilot_input_20*/pilot_input.json
+    require: {schema: thor-conservative-pilot-v1}
+  conservative_pilot:
+    stage: p1_conservative_pilot
+    glob: p1_conservative_pilot_20*/pilot.json
+    require: {schema: thor-conservative-pilot-v1, complete_rsi: false, causal_attribution_established: false}
+  conservative_pilot_materials:
+    stage: video_materials_conservative_pilot
+    glob: video_materials_conservative_pilot_20*/materials_manifest.json
+    require: {schema: thor-conservative-pilot-materials-v1, complete_rsi: false, new_model_inference_performed: false}
+  deployment_smoke:
+    stage: augmented_deploy_smoke
+    glob: augmented_deploy_smoke_20*/deployment_smoke.json
+  predict_transition:
+    stage: predict_transition
+    glob: predict_transition_20*/transition.json
+  predict_embeddings:
+    stage: predict_embeddings
+    glob: predict_embeddings_20*/embeddings.json
+  predict:
+    stage: predict_external_action
+    glob: predict_external_action_20*/predict_report.json
+  predict_multistate:
+    stage: p1_predict_validation
+    glob: p1_predict_validation_20*/predict_validation.json
+    require: {schema: thor-predict-validation-v1, diagnostic_complete: true}

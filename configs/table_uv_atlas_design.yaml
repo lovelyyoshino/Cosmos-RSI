@@ -1,0 +1,22 @@
+# table_uv_atlas_design.yaml — 修正单纹理块直接上传到小UV面片的设计诊断。
+# @author pony
+# @date 2026-11-08
+# @version v1.0.0
+# @last_modified 2026-11-08
+# @changelog
+#   - v1.0.0 (2026-11-08): 固定原纹理、每轴8次镜像平铺及已见设计源，不授予入训资格。
+version: thor-table-uv-atlas-design-v1
+purpose: design_only_not_training
+design_episode_suffix: caddy-demo_16
+reference_run: table_renderer_replay_20261108T162348_856568+0800
+texture_sha256: 1da3f6cf62bf0447dceaf7ef694252d53b1bb452eb89840becff985dc209db97
+atlas_side: 1024
+repeats_per_axis: 8
+tiling: alternating_mirror_edge_continuous
+resize: opencv_inter_area
+target_condition: {background: matte_dark_wood}
+mapping: original_mesh_uv_and_material_repeat
+frames: 93
+fps: 20
+eligible_for_training: false
+diagnostic_only: true

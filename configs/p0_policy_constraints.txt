@@ -1,0 +1,5 @@
+# 已验证的 Thor CUDA 栈；安装辅助依赖时禁止被解析器替换。
+torch==2.11.0+cu130
+torchvision==0.26.0+cu130
+transformers==5.5.3
+numpy==2.3.5

@@ -1,0 +1,33 @@
+# predict_validation.yaml — 固定多状态端点诊断，不授予规划或训练资格。
+# @author pony
+# @date 2026-11-09
+# @version v1.0.0
+# @last_modified 2026-11-09
+# @changelog
+#   - v1.0.0 (2026-11-09): 成败分层、首时刻/中间/最后十六步、复制基准及真实执行未来。
+schema: thor-predict-validation-v1
+selection:
+  conditions: [t00-standard, t00-lighting, t00-background]
+  outcomes: [false, true]
+  maximum_episodes_per_stratum: 2
+  minimum_episodes_per_stratum: 1
+  episode_order: lexicographic_id
+  positions: [initial, frame80_or_last_valid, terminal_16]
+sampling:
+  precision: bf16
+  attention: torch_sdpa
+  batch: 1
+  diffusion_steps: 4
+  seed: 42
+  action_horizon: 16
+metrics:
+  pixels: original_224x224_uint8
+  baseline: copy_current
+  aggregation: equal_episode_weight_then_average_frames_branches_views
+  pixel_error_is_task_success: false
+  goal_critical_metrics_and_action_ranking: pending_separate_validation
+authority:
+  eligible_for_training: false
+  eligible_for_planning: false
+  production_promotion: false
+  real_robot_enabled: false

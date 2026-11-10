@@ -1,0 +1,25 @@
+# table_reference_preview.yaml — 在已见设计源上验证材质参考，始终禁止直接入训。
+# @author pony
+# @date 2026-11-08
+# @version v1.0.0
+# @last_modified 2026-11-08
+# @changelog
+#   - v1.0.0 (2026-11-08): 固定深棕参考、非桌体edge及35步base双控制试验，不借用旧方法资格。
+version: thor-table-reference-preview-v1
+purpose: design_only_not_training
+design_episode_suffix: caddy-demo_16
+target_condition: {background: matte_dark_wood}
+model: base_edge_vis
+frames: 93
+fps: 20
+resolution: "480"
+num_steps: 35
+seed: 42
+batch: 1
+edge_weight: 0.2
+vis_weight: 0.8
+reference_rgb_gain: [0.55, 0.42, 0.35]
+reference_feather_inside_editable_pixels: 8
+protected_radius_pixels: 8
+blur_preset: high
+eligible_for_training: false

@@ -1,0 +1,23 @@
+# lossless_background_gate.yaml — 用户选择的仿真无损背景派生验收，原SAM2门保持。
+# @author pony
+# @date 2026-11-08
+# @version v1.0.0
+# @last_modified 2026-11-08
+# @changelog
+#   - v1.0.0 (2026-11-08): 固定保护区、视频时间及标签不变量，先设计后独立错误控制验证。
+version: thor-lossless-background-v1
+geometry_evidence_type: lossless_foreground_pixels_v1
+required_frames: 93
+fps: 20
+width: 256
+height: 256
+protected_radius_pixels: 8
+roi_names: [robot, black_book_1, desk_caddy_1]
+native_resize: opencv_inter_area
+source_mask: sim_seg
+design_episode_suffix: caddy-demo_16
+heldout_episode_suffix: caddy-demo_19
+temporal_residual_p95_max: 0.08
+semantic_review_required: true
+target_condition_review_required: true
+background_temporal_review_required: true

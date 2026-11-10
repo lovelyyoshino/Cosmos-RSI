@@ -1,0 +1,16 @@
+# 仅用于复制出的 sim 环境；不覆盖 policy 或原验证环境。
+numpy==1.26.4
+mujoco==3.2.3
+robosuite==1.4.1
+bddl==1.0.1
+future
+gym==0.26.2
+easydict
+h5py
+imageio
+imageio-ffmpeg
+opencv-python==4.11.0.86
+matplotlib
+termcolor
+wand==0.6.13
+scikit-image==0.25.2
